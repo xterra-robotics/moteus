@@ -515,6 +515,12 @@ struct BldcServoConfig {
   // acceleration multiplied by this.
   float inertia_feedforward = 0.0f;
 
+  //PACE Parameters which i can change anytime and store it in Flash memory
+  float pace_inertia = 0.0f;
+  float pace_damping = 0.0f;
+  float pace_coulomb_friction = 0.0f;
+  float pace_deadband = 0.0f;
+
   // Default values for the position mode velocity and acceleration
   // limits.
   float default_velocity_limit = std::numeric_limits<float>::quiet_NaN();
@@ -625,6 +631,10 @@ struct BldcServoConfig {
     a->Visit(MJ_NVP(bemf_feedforward));
     a->Visit(MJ_NVP(bemf_feedforward_override));
     a->Visit(MJ_NVP(inertia_feedforward));
+    a->Visit(MJ_NVP(pace_inertia));
+    a->Visit(MJ_NVP(pace_damping));
+    a->Visit(MJ_NVP(pace_deadband));
+    a->Visit(MJ_NVP(pace_coulomb_friction));
     a->Visit(MJ_NVP(default_velocity_limit));
     a->Visit(MJ_NVP(default_accel_limit));
     a->Visit(MJ_NVP(voltage_mode_control));
@@ -664,52 +674,6 @@ struct BldcServoPositionConfig {
   void Serialize(Archive* a) {
     a->Visit(MJ_NVP(position_min));
     a->Visit(MJ_NVP(position_max));
-  }
-};
-
-struct BldcServoControl_Control {
-  Vec3 pwm;
-  Vec3 voltage;
-
-  float d_V = 0.0f;
-  float q_V = 0.0f;
-
-  float i_d_A = 0.0f;
-  float i_q_A = 0.0f;
-
-  float q_comp_A = 0.0f;
-  float torque_Nm = 0.0f;
-
-  void Clear() {
-    // We implement this manually merely because it is faster than
-    // using the constructor which delegates to memset.  It is
-    // definitely more brittle.
-    pwm.a = 0.0f;
-    pwm.b = 0.0f;
-    pwm.c = 0.0f;
-
-    voltage.a = 0.0f;
-    voltage.b = 0.0f;
-    voltage.c = 0.0f;
-
-    d_V = 0.0f;
-    q_V = 0.0f;
-    i_d_A = 0.0f;
-    i_q_A = 0.0f;
-    q_comp_A = 0.0f;
-    torque_Nm = 0.0f;
-  }
-
-  template <typename Archive>
-  void Serialize(Archive* a) {
-    a->Visit(MJ_NVP(pwm));
-    a->Visit(MJ_NVP(voltage));
-    a->Visit(MJ_NVP(d_V));
-    a->Visit(MJ_NVP(q_V));
-    a->Visit(MJ_NVP(i_d_A));
-    a->Visit(MJ_NVP(i_q_A));
-    a->Visit(MJ_NVP(q_comp_A));
-    a->Visit(MJ_NVP(torque_Nm));
   }
 };
 
